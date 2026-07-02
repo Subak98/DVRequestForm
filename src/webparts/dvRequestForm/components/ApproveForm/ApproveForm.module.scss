@@ -1,0 +1,14 @@
+@import "~@fluentui/react/dist/sass/References.scss";
+
+.approveForm {
+  width: 100%;
+}
+.boldtext {
+  font-weight: 600;
+}
+:global {
+  .approveDialog .ms-Dialog-main {
+    max-width: 600px;
+    width: 100%;
+  }
+}

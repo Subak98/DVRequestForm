@@ -1,0 +1,40 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/package-solution.schema.json",
+  "solution": {
+    "name": "dv-request-form-client-side-solution",
+    "id": "8538098d-d556-4e92-9718-a9f0dcc8dd03",
+    "version": "1.0.0.0",
+    "includeClientSideAssets": true,
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "developer": {
+      "name": "",
+      "websiteUrl": "",
+      "privacyUrl": "",
+      "termsOfUseUrl": "",
+      "mpnId": "Undefined-1.22.2"
+    },
+    "metadata": {
+      "shortDescription": {
+        "default": "dv-request-form description"
+      },
+      "longDescription": {
+        "default": "dv-request-form description"
+      },
+      "screenshotPaths": [],
+      "videoUrl": "",
+      "categories": []
+    },
+    "features": [
+      {
+        "title": "dv-request-form Feature",
+        "description": "The feature that activates elements of the dv-request-form solution.",
+        "id": "6857b7b4-a515-4557-aa93-d9bee0989792",
+        "version": "1.0.0.0"
+      }
+    ]
+  },
+  "paths": {
+    "zippedPackage": "solution/dv-request-form.sppkg"
+  }
+}

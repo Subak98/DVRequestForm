@@ -1,0 +1,22 @@
+.reviewRequest {
+  width: 100%;
+}
+
+.reviewHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  text-align: center;
+}
+
+.tableWrapper {
+  background: #ffffff;
+  border: 1px solid #edebe9;
+  border-radius: 8px;
+  padding: 16px;
+}
+:global {
+  .editRequestDialog .ms-Dialog-main {
+    min-width: 50%;
+  }
+}

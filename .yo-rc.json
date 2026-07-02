@@ -1,0 +1,19 @@
+{
+  "@microsoft/generator-sharepoint": {
+    "useGulp": false,
+    "plusBeta": false,
+    "isCreatingSolution": true,
+    "nodeVersion": "22.22.0",
+    "sdksVersions": {},
+    "version": "1.22.2",
+    "libraryName": "dv-request-form",
+    "libraryId": "8538098d-d556-4e92-9718-a9f0dcc8dd03",
+    "environment": "spo",
+    "packageManager": "npm",
+    "solutionName": "dv-request-form",
+    "solutionShortDescription": "dv-request-form description",
+    "skipFeatureDeployment": true,
+    "isDomainIsolated": false,
+    "componentType": "webpart"
+  }
+}

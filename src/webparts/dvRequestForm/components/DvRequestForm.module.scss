@@ -1,0 +1,97 @@
+@import "~@fluentui/react/dist/sass/References.scss";
+
+.dvRequestForm {
+  overflow: hidden;
+  padding: 1em;
+  color: "[theme:bodyText, default: #323130]";
+  color: var(--bodyText);
+  width: 100%;
+  &.teams {
+    font-family: $ms-font-family-fallbacks;
+  }
+}
+
+.tabBar {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.tabButton {
+  min-width: 140px;
+  border-color: #3a64dd;
+  // background: #e5f1fb;
+  color: #3a64dd;
+}
+
+.activeTab {
+  min-width: 140px;
+  border-color: #3a64dd;
+  background: #3a64dd;
+  color: #ffffff;
+  &:hover {
+    border-color: #3a64dd;
+    background: #3a64dd;
+    color: #ffffff;
+  }
+}
+
+.sectionCard {
+  background: #ffffff;
+  border: 1px solid #edebe9;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: center;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.formContainer {
+  margin-top: 1rem;
+}
+
+.welcome {
+  text-align: center;
+}
+
+.welcomeImage {
+  width: 100%;
+  max-width: 420px;
+}
+
+.links {
+  a {
+    text-decoration: none;
+    color: "[theme:link, default:#03787c]";
+    color: var(
+      --link
+    ); // note: CSS Custom Properties support is limited to modern browsers only
+
+    &:hover {
+      text-decoration: underline;
+      color: "[theme:linkHovered, default: #014446]";
+      color: var(
+        --linkHovered
+      ); // note: CSS Custom Properties support is limited to modern browsers only
+    }
+  }
+}
+:global {
+  .requestFormDialog .ms-Dialog-main {
+    min-width: 50%;
+  }
+  .requestFormDialog .ms-Dialog-title {
+    padding-bottom: 4px;
+  }
+  #CommentsWrapper {
+    display: none;
+  }
+}
