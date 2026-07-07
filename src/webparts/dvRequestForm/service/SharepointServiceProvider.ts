@@ -259,18 +259,29 @@ export default class SharepointServiceProvider implements IServiceProvider {
             //       },
             //     ]
             //   : []),
-            ...(request.approverOptions && request.approverOptions.length > 0
-              ? [
-                  {
-                    FieldName: "Approvers",
-                    FieldValue: JSON.stringify(
+            {
+              FieldName: "Approvers",
+              FieldValue:
+                request.approverOptions.length > 0
+                  ? JSON.stringify(
                       request.approverOptions.map((email: string) => ({
                         Key: `i:0#.f|membership|${email}`,
                       })),
-                    ),
-                  },
-                ]
-              : []),
+                    )
+                  : "",
+            },
+            // ...(request.approverOptions && request.approverOptions.length > 0
+            //   ? [
+            //       {
+            //         FieldName: "Approvers",
+            //         FieldValue: JSON.stringify(
+            //           request.approverOptions.map((email: string) => ({
+            //             Key: `i:0#.f|membership|${email}`,
+            //           })),
+            //         ),
+            //       },
+            //     ]
+            //   : []),
             {
               FieldName: "SecondaryOwner",
               FieldValue:
@@ -354,10 +365,12 @@ export default class SharepointServiceProvider implements IServiceProvider {
     }
     return ["Draft saved successfully!"];
   }
-  public async fetchDepartments(): Promise<string[]> {
+  public async fetchDepartments(sitetype: string): Promise<string[]> {
     // Simulate fetching departments from SharePoint
     //   let _items: IList[];
-    const getitems = await this.sp.web.lists.getByTitle("Departments").items();
+    const getitems = await this.sp.web.lists
+      .getByTitle("Departments")
+      .items.filter(`SiteType eq '${sitetype}'`)();
     // console.log("getitems", getitems);
     return getitems.map((item: any) => item.Title);
   }

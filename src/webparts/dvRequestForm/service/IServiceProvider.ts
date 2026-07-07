@@ -10,7 +10,7 @@ export interface IServiceProvider {
     comments?: string,
     useremail?: string,
   ): Promise<IList[]>;
-  fetchDepartments(): Promise<string[]>;
+  fetchDepartments(sitetype: string): Promise<string[]>;
   fetchFormDescription(formDesclistid: string): Promise<any[]>;
   fetchUniqueDepartment(filter: string): Promise<any>;
   getReviewData(listName: string, Id: number, filter?: string): Promise<any>;

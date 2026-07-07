@@ -25,6 +25,7 @@ import {
   PeoplePicker,
   PrincipalType,
 } from "@pnp/spfx-controls-react/lib/PeoplePicker";
+import { set } from "@microsoft/sp-lodash-subset/lib/index";
 interface IRequestRow {
   key: string;
   Title: string;
@@ -94,6 +95,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
   );
   const [department, setDepartment] = useState(editFormData?.Department || "");
   const [approverOptions, setApproverOptions] = useState<any[]>([]);
+  const [sitetype, setSiteType] = useState<any>();
 
   const peoplePickerContext: IPeoplePickerContext = {
     absoluteUrl: props.props.context.pageContext.web.absoluteUrl,
@@ -107,6 +109,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
     setPrimaryEmails(item.PrimaryOwnerEmail);
     setSecondaryEmails(item.SecondaryOwnerEmail);
     setEditingItem(item);
+    setSiteType(item.SiteType);
     setEditFormData({ ...item });
     setIsEditDialogOpen(true);
   };
@@ -302,7 +305,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
   );
   const fetchDepartments = async () => {
     await props.props.provider
-      .fetchDepartments()
+      .fetchDepartments(sitetype)
       .then((response: any) => {
         setDepartmentOptions(
           response.map((dept: string) => ({
@@ -322,7 +325,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
       setMessage("Error loading departments.");
       console.error(error);
     });
-  }, [department]);
+  }, [department, sitetype]);
 
   React.useEffect(() => {
     getReviewData().catch((error) => {
@@ -349,6 +352,8 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
   // console.log(editFormData);
 
   const handleSaveEdit = async () => {
+    console.log(department);
+
     if (!editFormData) return;
     return await props.props.provider
       .EditRequest(props.props.RequestFormId, {
@@ -364,8 +369,8 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
         secondaryOwners: Array.isArray(secondaryOwners)
           ? secondaryOwners
           : secondaryEmails,
-        department: department || editFormData.Department,
-        approverOptions: approverOptions,
+        department: department,
+        approverOptions: department ? approverOptions : [],
         reason: editFormData.SiteJustification,
         id: editingItem.Id,
       })
@@ -507,7 +512,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
             <Stack horizontal tokens={{ childrenGap: 16 }} wrap>
               <Stack.Item grow={1}>
                 <TextField
-                  label="Site name"
+                  label="Site Name"
                   value={editFormData.Title}
                   onChange={(_, value) =>
                     handleEditFormChange("Title", value || "")
@@ -521,9 +526,12 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
                 <Dropdown
                   label="Site Type"
                   selectedKey={editFormData.SiteType}
-                  onChange={(_, option) =>
-                    handleEditFormChange("SiteType", option?.key as string)
-                  }
+                  onChange={(_, option) => {
+                    handleEditFormChange("SiteType", option?.key as string);
+                    setSiteType(option?.key as string);
+                    setDepartment("");
+                    setApproverOptions([]);
+                  }}
                   placeholder="Select Site Type"
                   options={[
                     { key: "Communication Site", text: "Communication Site" },
@@ -539,7 +547,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
               <Stack.Item grow={1}>
                 <PeoplePicker
                   context={peoplePickerContext}
-                  titleText="Select Primary owners"
+                  titleText="Select Primary Owners"
                   personSelectionLimit={10}
                   groupName={""} // Leave this blank in case you want to filter from all users
                   showtooltip={true}
@@ -556,7 +564,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
               <Stack.Item grow={1}>
                 <PeoplePicker
                   context={peoplePickerContext}
-                  titleText="Select Secondary owners"
+                  titleText="Select Secondary Owners"
                   personSelectionLimit={10}
                   groupName={""} // Leave this blank in case you want to filter from all users
                   showtooltip={true}
@@ -573,7 +581,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
             </Stack>
 
             <TextField
-              label="Site description"
+              label="Site Description"
               value={editFormData.Description}
               onChange={(_, value) =>
                 handleEditFormChange("Description", value || "")
@@ -615,7 +623,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
             </Stack>
 
             <TextField
-              label="Reason for site creation"
+              label="Reason For Site Creation"
               value={editFormData.SiteJustification}
               onChange={(_, value) =>
                 handleEditFormChange("SiteJustification", value || "")
