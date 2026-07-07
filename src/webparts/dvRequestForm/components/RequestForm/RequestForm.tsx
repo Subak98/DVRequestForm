@@ -84,7 +84,7 @@ const RequestForm: React.FC<IRequestFormProps> = ({
         setFormDescription(fd[0]);
       });
     await provider
-      .fetchDepartments()
+      .fetchDepartments(sitetype)
       .then((response: any) => {
         setDepartmentOptions(
           response.map((dept: string) => ({
@@ -103,7 +103,7 @@ const RequestForm: React.FC<IRequestFormProps> = ({
     fetchDepartments().catch((error) => {
       console.error("Error fetching departments:", error);
     });
-  }, [department]);
+  }, [department, sitetype]);
 
   useEffect(() => {
     setApprover("");
@@ -395,7 +395,10 @@ const RequestForm: React.FC<IRequestFormProps> = ({
                 <Dropdown
                   label="Site Type"
                   selectedKey={sitetype}
-                  onChange={(_, option) => setSiteType(option?.key as string)}
+                  onChange={(_, option) => {
+                    setSiteType(option?.key as string);
+                    setDepartment("");
+                  }}
                   placeholder="Select department"
                   options={[
                     { key: "Communication Site", text: "Communication Site" },
