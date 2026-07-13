@@ -167,9 +167,16 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
           const encoded = encodeURIComponent(JSON.stringify(urlJson));
           // console.log(encoded);
           if (status === "Hold" || status === "Rejected") {
-            window.location.href = `${currentWebUrl}/SitePages/DV-Request-Form.aspx`;
+            window.location.href = `${currentWebUrl}/SitePages/DV-Request-Form.aspx?tab=review`;
           } else {
-            window.location.href = `${currentWebUrl}/SitePages/SPOProvisioning.aspx?config=${encoded}`;
+            window.open(
+              `${currentWebUrl}/SitePages/SPOProvisioning.aspx?config=${encoded}`,
+              "_blank",
+              "noopener,noreferrer",
+            );
+            window.setTimeout(() => {
+              window.location.href = `${currentWebUrl}/SitePages/DV-Request-Form.aspx?tab=review`;
+            }, 300);
           }
         });
     } catch (error) {
