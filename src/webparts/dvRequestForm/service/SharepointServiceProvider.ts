@@ -37,7 +37,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
         .getById(listid)
         .items.getById(itemId)
         .select(
-          "Title,SiteDescription,SiteJustification,SiteType,Status,Department,Created,Author/Title,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
+          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,Author/Title,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
         )
         .expand("Author,PrimaryOwner,Approvers,SecondaryOwner,ApprovedBy")();
 
@@ -51,7 +51,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
 
       getitems = await query
         .select(
-          "Title,SiteDescription,SiteJustification,SiteType,Status,Department,Created,Author/Title,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
+          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,Author/Title,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
         )
         .expand("Author,PrimaryOwner,Approvers,SecondaryOwner,ApprovedBy")
         .orderBy("Modified", false)();
@@ -65,11 +65,14 @@ export default class SharepointServiceProvider implements IServiceProvider {
         Title: item.Title,
         Description: item.SiteDescription,
         SiteJustification: item.SiteJustification,
+        Comments: item.Comments,
+        SiteSlugUrl: item.SiteSlugUrl,
         Status: item.Status,
         SiteType: item.SiteType,
         Department: item.Department,
         Date: moment(item.Created).format("MM/DD/YYYY"),
         Requestor: item.Author.Title,
+        RequestorEmail: item.Author.EMail,
         ApprovedBy: item.ApprovedBy,
         PrimaryOwnerTitle: item.PrimaryOwner
           ? item.PrimaryOwner.map(
@@ -87,6 +90,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
               }),
             )
           : [],
+        RequestApprover: item.Approvers,
         Approver: item.Approvers
           ? item.Approvers.map(
               (approver: { Title: string; EMail: string }) => ({
@@ -377,7 +381,6 @@ export default class SharepointServiceProvider implements IServiceProvider {
   public async fetchFormDescription(formDesclistid: string): Promise<string[]> {
     // Simulate fetching departments from SharePoint
     //   let _items: IList[];
-    console.log(formDesclistid);
 
     const getitems = await this.sp.web.lists
       .getById(formDesclistid)
@@ -429,5 +432,53 @@ export default class SharepointServiceProvider implements IServiceProvider {
         console.log("Email sent.");
         return response.json();
       });
+  }
+  public async ApprovalResponse(
+    context: any,
+    siteName: string,
+    siteDescription: string,
+    primaryOwners: any[],
+    secondaryOwners: any[],
+    department: string,
+    approver: any,
+    comments: string,
+    approverOptions: any[],
+    Id: any,
+    Requestor: string,
+    RequestorEmail: string,
+    status: string,
+    ApprovalResponseURL: string,
+  ): Promise<void> {
+    const postURL = ApprovalResponseURL;
+    // "https://default0cbc4af888ef4aebbc93f44fbe4132.5b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/24/workflows/b06e5c2c15024aae8005575ebd93a21e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=sRRKc7sy2cxa_nRLZlWKlcxuGVXlYAhEQeKpv1yHtNM";
+    const body: string = JSON.stringify({
+      title: siteName,
+      department: department,
+      comments: comments,
+      Requestor: Requestor,
+      RequestorEmail: RequestorEmail,
+      Approver: approverOptions,
+      primaryOwners: primaryOwners,
+      secondaryOwners: secondaryOwners,
+      Id: Id,
+      status: status,
+    });
+    console.log(body);
+
+    const requestHeaders: Headers = new Headers();
+    requestHeaders.append("Content-type", "application/json");
+    const httpClientOptions: IHttpClientOptions = {
+      body: body,
+      headers: requestHeaders,
+    };
+    console.log("Sending Email");
+
+    const response = await context.httpClient.post(
+      postURL,
+      HttpClient.configurations.v1,
+      httpClientOptions,
+    );
+
+    console.log("Email sent.", response);
   }
 }

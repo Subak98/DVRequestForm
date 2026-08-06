@@ -10,4 +10,5 @@ export interface IApproveFormProps {
   requestId: string;
   listid: string;
   useremail: string;
+  ApprovalResponseURL: string;
 }

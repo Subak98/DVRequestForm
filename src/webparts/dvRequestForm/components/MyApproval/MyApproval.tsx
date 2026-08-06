@@ -3,12 +3,16 @@ import { useEffect, useMemo, useState } from "react";
 import {
   DetailsList,
   IColumn,
+  IDetailsRowProps,
   IconButton,
   MessageBar,
   MessageBarType,
   SelectionMode,
   Stack,
   Text,
+  Dialog,
+  DialogType,
+  DialogFooter,
   DefaultButton,
 } from "@fluentui/react";
 import styles from "../ReviewForm/ReviewRequest.module.scss";
@@ -21,10 +25,14 @@ interface IRequestRow {
   Description: string;
   SiteJustification: string;
   PrimaryOwnerTitle: string;
+  SecondaryOwnerTitle?: string;
   ApproverTitle: string;
   ApproverEmail: string[];
   Status: string;
+  SiteType: string;
   Id: number;
+  SiteSlugUrl: string;
+  ApprovedBy?: { Title: string };
 }
 
 interface IMyApprovalProps {
@@ -38,6 +46,10 @@ const MyApproval: React.FC<IMyApprovalProps> = ({ props }) => {
     MessageBarType.success,
   );
   const [currentPage, setCurrentPage] = useState(1);
+  const [selectedApproval, setSelectedApproval] = useState<IRequestRow | null>(
+    null,
+  );
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const pageSize = 10;
   console.log(props);
 
@@ -106,6 +118,52 @@ const MyApproval: React.FC<IMyApprovalProps> = ({ props }) => {
         {item[fieldName]}
       </span>
     );
+
+  const getDetailText = (value: any) => {
+    if (value == null || value === "") {
+      return "-";
+    }
+    if (Array.isArray(value)) {
+      return value
+        .map((item) =>
+          item == null
+            ? ""
+            : item.Title || item.text || item.name || String(item),
+        )
+        .filter(Boolean)
+        .join(", ");
+    }
+    return String(value);
+  };
+
+  const handleViewDetails = (item: IRequestRow) => {
+    setSelectedApproval(item);
+    setIsDetailsDialogOpen(true);
+  };
+
+  const onRenderRow = (
+    props?: IDetailsRowProps,
+    defaultRender?: (props?: IDetailsRowProps) => React.ReactElement | null,
+  ): React.ReactElement | null => {
+    if (!props || !defaultRender) {
+      return defaultRender?.(props) ?? null;
+    }
+
+    return (
+      <div
+        onClick={(event) => {
+          const target = event.target as HTMLElement;
+          if (target.closest("button, a, input, textarea, svg, path")) {
+            return;
+          }
+          handleViewDetails(props.item as IRequestRow);
+        }}
+        style={{ cursor: "pointer" }}
+      >
+        {defaultRender(props)}
+      </div>
+    );
+  };
   const columns: IColumn[] = useMemo(
     () => [
       {
@@ -115,7 +173,30 @@ const MyApproval: React.FC<IMyApprovalProps> = ({ props }) => {
         minWidth: 150,
         maxWidth: 220,
         isResizable: true,
-        onRender: renderTooltipCell("Title"),
+        onRender: (item: IRequestRow) => {
+          const isApprovedWithUrl =
+            item.Status === "Approved" && item.SiteSlugUrl;
+          return isApprovedWithUrl ? (
+            <a
+              href={item.SiteSlugUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-interception="off"
+              title={item.Title}
+              style={{ color: "#0078d4", textDecoration: "none" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.textDecoration = "underline")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.textDecoration = "none")
+              }
+            >
+              {item.Title}
+            </a>
+          ) : (
+            <span title={item.Title}>{item.Title}</span>
+          );
+        },
       },
       {
         key: "column2",
@@ -188,13 +269,81 @@ const MyApproval: React.FC<IMyApprovalProps> = ({ props }) => {
           </MessageBar>
         ) : (
           <>
-            <div className={styles.tableWrapper}>
-              <DetailsList
-                items={pagedApprovals}
-                columns={columns}
-                selectionMode={SelectionMode.none}
-                setKey="set"
-              />
+            <div>
+              <div className={styles.tableWrapper}>
+                {" "}
+                <DetailsList
+                  items={pagedApprovals}
+                  columns={columns}
+                  selectionMode={SelectionMode.none}
+                  setKey="set"
+                  onRenderRow={onRenderRow}
+                />
+              </div>
+
+              <Dialog
+                hidden={!isDetailsDialogOpen}
+                onDismiss={() => setIsDetailsDialogOpen(false)}
+                dialogContentProps={{
+                  type: DialogType.largeHeader,
+                  title: "Approval Details",
+                }}
+                className="ReviewRequest"
+                modalProps={{ isBlocking: false }}
+              >
+                <Stack tokens={{ childrenGap: 12 }}>
+                  <Text>
+                    <strong>Site Title:</strong>{" "}
+                    {getDetailText(selectedApproval?.Title)}
+                  </Text>
+                  <Text>
+                    <strong>Primary Owner:</strong>{" "}
+                    {getDetailText(selectedApproval?.PrimaryOwnerTitle)}
+                  </Text>
+                  <Text>
+                    <strong>Secondary Owner:</strong>{" "}
+                    {getDetailText(
+                      selectedApproval?.SecondaryOwnerTitle
+                        ? selectedApproval?.SecondaryOwnerTitle
+                        : "-",
+                    )}{" "}
+                  </Text>
+                  <Text>
+                    <strong>Date:</strong>{" "}
+                    {getDetailText(selectedApproval?.Date)}
+                  </Text>
+                  <Text>
+                    <strong>Approvers:</strong>{" "}
+                    {getDetailText(selectedApproval?.ApproverTitle)}
+                  </Text>
+                  <Text>
+                    <strong>Site Justification:</strong>{" "}
+                    {getDetailText(selectedApproval?.SiteJustification)}
+                  </Text>
+                  <Text>
+                    <strong>Status:</strong>{" "}
+                    {getDetailText(selectedApproval?.Status)}
+                  </Text>
+                  <Text>
+                    <strong>Department:</strong>{" "}
+                    {getDetailText(selectedApproval?.Department)}
+                  </Text>{" "}
+                  <Text>
+                    <strong>Site Type:</strong>{" "}
+                    {getDetailText(selectedApproval?.SiteType)}
+                  </Text>
+                  <Text>
+                    <strong>Site Description:</strong>{" "}
+                    {getDetailText(selectedApproval?.Description)}
+                  </Text>
+                </Stack>
+                <DialogFooter>
+                  <DefaultButton
+                    text="Close"
+                    onClick={() => setIsDetailsDialogOpen(false)}
+                  />
+                </DialogFooter>
+              </Dialog>
               <Stack
                 horizontal
                 verticalAlign="center"

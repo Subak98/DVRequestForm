@@ -28,6 +28,7 @@ export interface IDvRequestFormWebPartProps {
   RequestFormId: string;
   formDescription: string;
   PAURL: string;
+  ApprovalResponseURL: string;
 }
 
 export default class DvRequestFormWebPart extends BaseClientSideWebPart<IDvRequestFormWebPartProps> {
@@ -50,7 +51,8 @@ export default class DvRequestFormWebPart extends BaseClientSideWebPart<IDvReque
         provider: this._serviceProvider,
         RequestFormId: this.properties.RequestFormId,
         formDescription: this.properties.formDescription,
-        PAURL: this.properties.PAURL
+        PAURL: this.properties.PAURL,
+        ApprovalResponseURL: this.properties.ApprovalResponseURL,
       });
 
     ReactDom.render(element, this.domElement);
@@ -179,6 +181,9 @@ export default class DvRequestFormWebPart extends BaseClientSideWebPart<IDvReque
                 }),
                 PropertyPaneTextField("PAURL", {
                   label: "Enter Trigger URL for Power Automate",
+                }),
+                PropertyPaneTextField("ApprovalResponseURL", {
+                  label: "Enter Approval Response URL for Power Automate",
                 }),
               ],
             },

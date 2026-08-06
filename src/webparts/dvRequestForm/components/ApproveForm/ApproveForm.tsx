@@ -25,11 +25,14 @@ interface IRequestData {
   Department: string;
   PrimaryOwnerTitle: string;
   SecondaryOwnerTitle?: string;
-  PrimaryOwner?: { Title: string; EMail: string }[];
-  SecondaryOwner?: { Title: string; EMail: string }[];
+  PrimaryOwner?: any;
+  SecondaryOwner?: any;
   ApproverTitle: string;
   Status: string;
   ApprovedBy: any;
+  Requestor: string;
+  RequestApprover: any;
+  RequestorEmail: string;
 }
 interface IDeptData {
   Title: string;
@@ -43,6 +46,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
   requestId,
   listid,
   useremail,
+  ApprovalResponseURL,
 }) => {
   const [requestData, setRequestData] = useState<IRequestData | null>(null);
   const [comments, setComments] = useState("");
@@ -136,53 +140,70 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
     try {
       await provider
         .ChangeStatus(listid, requestData.Id, status, comments, useremail)
-        .then((response: any) => {
+        .then(async (response: any) => {
           setApprovalStatus(status);
           setMessageType(MessageBarType.success);
           setMessage(
             `Request has been ${status.toLowerCase()}ed successfully.`,
           );
           console.log(requestData);
-          const tenantName = new URL(
-            context.pageContext.web.absoluteUrl,
-          ).hostname.split(".")[0];
 
           // console.log(tenantName);
           // Close dialog and navigate after successful submission
-          const urlJson = {
-            sitetitle: requestData.Title,
-            tenantname: tenantName,
-            sitetype: requestData.SiteType,
-            templateid: departmentdata?.TemplateId,
-            primaryowner: normalizePeople(
-              requestData.PrimaryOwner,
-              requestData.PrimaryOwnerTitle,
-            ),
-            secondaryowner: normalizePeople(
-              requestData.SecondaryOwner,
-              requestData.SecondaryOwnerTitle,
-            ),
-          };
-
-          const encoded = encodeURIComponent(JSON.stringify(urlJson));
-          // console.log(encoded);
-          if (status === "Hold" || status === "Rejected") {
-            window.location.href = `${currentWebUrl}/SitePages/DV-Request-Form.aspx?tab=review`;
-          } else {
-            window.open(
-              `${currentWebUrl}/SitePages/SPOProvisioning.aspx?config=${encoded}`,
-              "_blank",
-              "noopener,noreferrer",
-            );
-            window.setTimeout(() => {
-              window.location.href = `${currentWebUrl}/SitePages/DV-Request-Form.aspx?tab=review`;
-            }, 300);
-          }
         });
     } catch (error) {
       setMessageType(MessageBarType.error);
       setMessage("Error processing approval.");
       console.error(error);
+    }
+    if (status === "Hold" || status === "Rejected") {
+      await provider.ApprovalResponse(
+        context,
+        requestData.Title,
+        requestData.Description,
+        requestData.PrimaryOwner,
+        requestData.SecondaryOwner,
+        requestData.Department,
+        requestData.ApproverTitle,
+        comments,
+        requestData.RequestApprover,
+        requestData.Id,
+        requestData.Requestor,
+        requestData.RequestorEmail,
+        status,
+        ApprovalResponseURL,
+      );
+    }
+    const tenantName = new URL(
+      context.pageContext.web.absoluteUrl,
+    ).hostname.split(".")[0];
+    const urlJson = {
+      sitetitle: requestData.Title,
+      tenantname: tenantName,
+      sitetype: requestData.SiteType,
+      templateid: departmentdata?.TemplateId,
+      primaryowner: normalizePeople(
+        requestData.PrimaryOwner,
+        requestData.PrimaryOwnerTitle,
+      ),
+      secondaryowner: normalizePeople(
+        requestData.SecondaryOwner,
+        requestData.SecondaryOwnerTitle,
+      ),
+    };
+    const encoded = encodeURIComponent(JSON.stringify(urlJson));
+    console.log(encoded);
+    if (status === "Hold" || status === "Rejected") {
+      window.location.href = `${currentWebUrl}/SitePages/DV-Request-Form.aspx?tab=review`;
+    } else {
+      window.open(
+        `${currentWebUrl}/SitePages/SPOProvisioning.aspx?config=${encoded}`,
+        "_blank",
+        "noopener,noreferrer",
+      );
+      window.setTimeout(() => {
+        window.location.href = `${currentWebUrl}/SitePages/DV-Request-Form.aspx?tab=review`;
+      }, 300);
     }
   };
 

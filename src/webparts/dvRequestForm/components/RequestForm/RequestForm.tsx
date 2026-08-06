@@ -75,7 +75,7 @@ const RequestForm: React.FC<IRequestFormProps> = ({
     msGraphClientFactory: props.context.msGraphClientFactory,
     spHttpClient: props.context.spHttpClient,
   };
-  console.log(props);
+  // console.log(props);
 
   const fetchDepartments = async () => {
     await provider
@@ -283,6 +283,7 @@ const RequestForm: React.FC<IRequestFormProps> = ({
       setDialogVisible(false);
       return;
     }
+    setIsSubmitting(true);
     try {
       const exists = await checkSiteExists(siteName.trim());
       if (exists) {
@@ -554,7 +555,11 @@ const RequestForm: React.FC<IRequestFormProps> = ({
         }}
       >
         <DialogFooter>
-          <DefaultButton text="Save Draft" onClick={handleSaveDraft} />
+          <DefaultButton
+            text="Save Draft"
+            disabled={isSubmitting}
+            onClick={handleSaveDraft}
+          />
           <PrimaryButton
             text="Submit Request"
             onClick={handleConfirmSubmit}

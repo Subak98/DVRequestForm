@@ -16,4 +16,5 @@ export interface IDvRequestFormProps {
   RequestFormId: string;
   formDescription: string;
   PAURL: string;
+  ApprovalResponseURL: string;
 }

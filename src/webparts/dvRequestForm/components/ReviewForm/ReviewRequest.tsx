@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   DetailsList,
   IColumn,
+  IDetailsRowProps,
   IconButton,
   MessageBar,
   MessageBarType,
@@ -41,8 +42,18 @@ interface IRequestRow {
   SecondaryOwnerTitle: string;
   primaryOwners: any;
   ApproverTitle: string;
+  Comments: string;
+  SiteSlugUrl: string;
+  SiteDescription: string;
+  ApprovedBy?: { Title: string };
   Id: number;
-  Status: "Draft" | "Submitted" | "Approved" | "Rejected" | "InProgress";
+  Status:
+    | "Draft"
+    | "Submitted"
+    | "Approved"
+    | "Rejected"
+    | "InProgress"
+    | "Hold";
 }
 interface IApproverOption {
   key: string;
@@ -82,6 +93,10 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
   const [validationMessage, setValidationMessage] = useState<string | null>(
     null,
   );
+  const [selectedRequest, setSelectedRequest] = useState<IRequestRow | null>(
+    null,
+  );
+  const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
   const [primaryOwners, setPrimaryOwners] = React.useState<any[]>([]);
@@ -209,7 +224,30 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
         minWidth: 150,
         maxWidth: 220,
         isResizable: true,
-        onRender: renderTooltipCell("Title"),
+        onRender: (item: IRequestRow) => {
+          const isApprovedWithUrl =
+            item.Status === "Approved" && item.SiteSlugUrl;
+          return isApprovedWithUrl ? (
+            <a
+              href={item.SiteSlugUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-interception="off"
+              title={item.Title}
+              style={{ color: "#0078d4", textDecoration: "none" }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.textDecoration = "underline")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.textDecoration = "none")
+              }
+            >
+              {item.Title}
+            </a>
+          ) : (
+            <span title={item.Title}>{item.Title}</span>
+          );
+        },
       },
       {
         key: "column2",
@@ -303,6 +341,53 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
     ],
     [],
   );
+
+  const getDetailText = (value: any) => {
+    if (value == null) {
+      return "-";
+    }
+    if (Array.isArray(value)) {
+      return value
+        .map((item) =>
+          item == null
+            ? ""
+            : item.Title || item.text || item.name || String(item),
+        )
+        .filter(Boolean)
+        .join(", ");
+    }
+    return String(value);
+  };
+
+  const handleViewDetails = (item: IRequestRow) => {
+    setSelectedRequest(item);
+    setIsDetailsDialogOpen(true);
+  };
+
+  const onRenderRow = (
+    props?: IDetailsRowProps,
+    defaultRender?: (props?: IDetailsRowProps) => React.ReactElement | null,
+  ): React.ReactElement | null => {
+    if (!props || !defaultRender) {
+      return defaultRender?.(props) ?? null;
+    }
+
+    return (
+      <div
+        onClick={(event) => {
+          const target = event.target as HTMLElement;
+          if (target.closest("button, a, input, textarea, svg, path")) {
+            return;
+          }
+          handleViewDetails(props.item as IRequestRow);
+        }}
+        style={{ cursor: "pointer" }}
+      >
+        {defaultRender(props)}
+      </div>
+    );
+  };
+
   const fetchDepartments = async () => {
     await props.props.provider
       .fetchDepartments(sitetype)
@@ -346,8 +431,8 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
       setCurrentPage(pageCount);
     }
   }, [currentPage, pageCount]);
-  console.log(secondaryEmails);
-  console.log(secondaryOwners);
+  // console.log(secondaryEmails);
+  // console.log(secondaryOwners);
 
   // console.log(editFormData);
 
@@ -474,6 +559,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
             selectionMode={SelectionMode.none}
             columns={columns}
             setKey="none"
+            onRenderRow={onRenderRow}
           />
         </div>
       </Stack>
@@ -699,6 +785,84 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
             </Stack>
           </Stack>
         )}
+      </Dialog>
+
+      <Dialog
+        hidden={!isDetailsDialogOpen}
+        onDismiss={() => setIsDetailsDialogOpen(false)}
+        dialogContentProps={{
+          type: DialogType.largeHeader,
+          title: "Request Details",
+          // subText: "View full request details.",
+        }}
+        modalProps={{ isBlocking: false }}
+        className="ReviewRequest"
+      >
+        <Stack tokens={{ childrenGap: 12 }}>
+          <Text>
+            <strong>Site Title:</strong> {getDetailText(selectedRequest?.Title)}
+          </Text>
+          <Text>
+            <strong>Primary Owner:</strong>{" "}
+            {getDetailText(selectedRequest?.PrimaryOwnerTitle)}
+          </Text>
+          <Text>
+            <strong>Secondary Owner:</strong>{" "}
+            {getDetailText(
+              selectedRequest?.SecondaryOwnerTitle
+                ? selectedRequest?.SecondaryOwnerTitle
+                : "-",
+            )}
+          </Text>
+          <Text>
+            <strong>Date:</strong> {getDetailText(selectedRequest?.Date)}
+          </Text>
+          <Text>
+            <strong>Approvers:</strong>{" "}
+            {getDetailText(selectedRequest?.ApproverTitle)}
+          </Text>
+          <Text>
+            <strong>Site Justification:</strong>{" "}
+            {getDetailText(selectedRequest?.SiteJustification)}
+          </Text>
+          <Text>
+            <strong>Status:</strong> {getDetailText(selectedRequest?.Status)}
+          </Text>
+          {(selectedRequest?.Status === "Approved" ||
+            selectedRequest?.Status === "Hold" ||
+            selectedRequest?.Status === "Rejected") && (
+            <Text>
+              <strong>Approved By:</strong>{" "}
+              {getDetailText(selectedRequest?.ApprovedBy?.Title)}
+            </Text>
+          )}
+          {(selectedRequest?.Status === "Approved" ||
+            selectedRequest?.Status === "Hold" ||
+            selectedRequest?.Status === "Rejected") && (
+            <Text>
+              <strong>Comments:</strong>{" "}
+              {getDetailText(selectedRequest?.Comments)}
+            </Text>
+          )}
+          <Text>
+            <strong>Department:</strong>{" "}
+            {getDetailText(selectedRequest?.Department)}
+          </Text>
+          <Text>
+            <strong>Site Type:</strong>{" "}
+            {getDetailText(selectedRequest?.SiteType)}
+          </Text>
+          <Text>
+            <strong>Site Description:</strong>{" "}
+            {getDetailText(selectedRequest?.Description)}
+          </Text>
+        </Stack>
+        <DialogFooter>
+          <PrimaryButton
+            text="Close"
+            onClick={() => setIsDetailsDialogOpen(false)}
+          />
+        </DialogFooter>
       </Dialog>
 
       <Dialog

@@ -15,8 +15,16 @@
   border-radius: 8px;
   padding: 16px;
 }
+
 :global {
   .editRequestDialog .ms-Dialog-main {
     min-width: 50%;
+  }
+  @media (min-width: 480px) {
+    .ReviewRequest .ms-Dialog-main {
+      width: auto;
+      max-width: 340px;
+      min-width: 400px;
+    }
   }
 }

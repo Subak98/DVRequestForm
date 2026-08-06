@@ -27,4 +27,21 @@ export interface IServiceProvider {
     Id: any,
     PAURL: string,
   ): Promise<any>;
+  ApprovalResponse(
+    context: any,
+    siteName: string,
+    siteDescription: string,
+    primaryOwners: any[],
+    secondaryOwners: any[],
+    department: string,
+    approver: any,
+    reason: string,
+    approverOptions: any[],
+    Id: any,
+    Requestor: string,
+    RequestorEmail: string,
+    status: string,
+    ApprovalResponseURL: string,
+    // PAURL: string,
+  ): Promise<any>;
 }
