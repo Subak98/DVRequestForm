@@ -225,7 +225,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
   if (!requestData) {
     return null;
   }
-
+  const baseSiteUrl = currentWebUrl.split("/").slice(0, -1).join("/");
   return (
     <div className={styles.approveForm}>
       {requestData.Status == "Approved" && requestData.ApprovedBy ? (
@@ -287,7 +287,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
             </div>
             <div>
               <Text className={styles.boldtext}>Requested URL: </Text>
-              <Text>{`${currentWebUrl}/${requestData.Title.replace(/\s+/g, "")}`}</Text>
+              <Text>{`${baseSiteUrl}/${requestData.Title.replace(/\s+/g, "")}`}</Text>
             </div>
             <TextField
               label="Comments"

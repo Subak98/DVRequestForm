@@ -158,7 +158,7 @@ const RequestForm: React.FC<IRequestFormProps> = ({
   }, [currentWebUrl, department, spHttpClient]);
 
   const checkSiteExists = async (name: string): Promise<boolean> => {
-    const escaped = name.trim().replace(/\s+/g, "");
+    const escaped = name.trim();
     // const queryText = `Title:${escaped} AND contentclass:STS_Web`;
     const queryText = `Title:${escaped}`;
     const requestUrl = `${currentWebUrl}/_api/search/query?querytext='${encodeURIComponent(queryText)}'&trimduplicates=false&rowlimit=1&selectproperties='Title,Path'`;

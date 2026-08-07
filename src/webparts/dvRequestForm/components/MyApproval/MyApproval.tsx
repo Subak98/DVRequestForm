@@ -60,7 +60,7 @@ const MyApproval: React.FC<IMyApprovalProps> = ({ props }) => {
       const allRequests: any[] = await props.provider.getReviewData(
         props.RequestFormId,
         "",
-        `Approvers/EMail eq '${currentUserEmail}' and Status eq 'InProgress'`,
+        `Approvers/EMail eq '${currentUserEmail}' and Status eq 'Submitted'`,
       );
 
       const filtered = allRequests.filter((item) => {
@@ -248,7 +248,7 @@ const MyApproval: React.FC<IMyApprovalProps> = ({ props }) => {
             iconProps={{ iconName: "AcceptMedium" }}
             title="Approve/Reject/Hold"
             ariaLabel="Send request"
-            disabled={item.Status === "Submitted" || item.Status === "Approved"}
+            // disabled={item.Status === "Submitted" || item.Status === "Approved"}
             onClick={() => handleSendRequest(item)}
           />
         ),
