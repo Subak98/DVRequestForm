@@ -64,6 +64,7 @@ const DvRequestForm: React.FC<IDvRequestFormProps> = (props) => {
         requestId={requestId}
         listid={props.RequestFormId}
         useremail={props.userEmail}
+        username={props.userDisplayName}
         ApprovalResponseURL={props.ApprovalResponseURL}
       />
     );

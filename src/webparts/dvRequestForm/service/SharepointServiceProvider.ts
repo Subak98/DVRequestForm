@@ -37,7 +37,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
         .getById(listid)
         .items.getById(itemId)
         .select(
-          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,Author/Title,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
+          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,Author/Title,Author/EMail,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
         )
         .expand("Author,PrimaryOwner,Approvers,SecondaryOwner,ApprovedBy")();
 
@@ -51,7 +51,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
 
       getitems = await query
         .select(
-          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,Author/Title,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
+          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,Author/Title,Author/EMail,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
         )
         .expand("Author,PrimaryOwner,Approvers,SecondaryOwner,ApprovedBy")
         .orderBy("Modified", false)();
@@ -448,6 +448,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
     RequestorEmail: string,
     status: string,
     ApprovalResponseURL: string,
+    username: string,
   ): Promise<void> {
     const postURL = ApprovalResponseURL;
     // "https://default0cbc4af888ef4aebbc93f44fbe4132.5b.environment.api.powerplatform.com:443/powerautomate/automations/direct/cu/24/workflows/b06e5c2c15024aae8005575ebd93a21e/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=sRRKc7sy2cxa_nRLZlWKlcxuGVXlYAhEQeKpv1yHtNM";
@@ -462,6 +463,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
       secondaryOwners: secondaryOwners,
       Id: Id,
       status: status,
+      username: username,
     });
     console.log(body);
 

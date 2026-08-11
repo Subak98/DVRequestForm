@@ -46,6 +46,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
   requestId,
   listid,
   useremail,
+  username,
   ApprovalResponseURL,
 }) => {
   const [requestData, setRequestData] = useState<IRequestData | null>(null);
@@ -172,6 +173,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
         requestData.RequestorEmail,
         status,
         ApprovalResponseURL,
+        username,
       );
     }
     const tenantName = new URL(
@@ -190,6 +192,12 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
         requestData.SecondaryOwner,
         requestData.SecondaryOwnerTitle,
       ),
+      RequesterEmail: [
+        {
+          title: requestData.Requestor,
+          email: requestData.RequestorEmail,
+        },
+      ],
     };
     const encoded = encodeURIComponent(JSON.stringify(urlJson));
     console.log(encoded);
@@ -221,6 +229,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
       </Dialog>
     );
   }
+  console.log(requestData);
 
   if (!requestData) {
     return null;
@@ -270,7 +279,10 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
               <Text className={styles.boldtext}>Primary Owner: </Text>
               <Text>{requestData.PrimaryOwnerTitle}</Text>
             </div>
-
+            <div>
+              <Text className={styles.boldtext}>Secondary Owner: </Text>
+              <Text>{requestData.SecondaryOwnerTitle}</Text>
+            </div>
             <div>
               <Text className={styles.boldtext}>Approver: </Text>
               <Text>{requestData.ApproverTitle}</Text>

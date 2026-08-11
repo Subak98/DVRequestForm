@@ -42,6 +42,7 @@ export interface IServiceProvider {
     RequestorEmail: string,
     status: string,
     ApprovalResponseURL: string,
+    useremail: string,
     // PAURL: string,
   ): Promise<any>;
 }

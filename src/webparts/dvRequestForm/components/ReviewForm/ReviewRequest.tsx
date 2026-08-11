@@ -431,8 +431,8 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
       setCurrentPage(pageCount);
     }
   }, [currentPage, pageCount]);
-  // console.log(secondaryEmails);
-  // console.log(secondaryOwners);
+  console.log(secondaryEmails);
+  console.log(secondaryOwners);
 
   // console.log(editFormData);
 
@@ -451,9 +451,10 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
         //   primaryOwners: primaryOwners,
         // }),
         // primaryOwners: primaryOwners,
-        secondaryOwners: Array.isArray(secondaryOwners)
-          ? secondaryOwners
-          : secondaryEmails,
+        secondaryOwners:
+          Array.isArray(secondaryOwners) && secondaryOwners.length > 0
+            ? secondaryOwners
+            : secondaryEmails,
         department: department,
         approverOptions: department ? approverOptions : [],
         reason: editFormData.SiteJustification,
