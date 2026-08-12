@@ -534,6 +534,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
       setEditFormData({ ...editFormData, [field]: value });
     }
   };
+  console.log(selectedRequest);
 
   return (
     <div className={styles.reviewRequest}>
@@ -833,7 +834,14 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
             selectedRequest?.Status === "Hold" ||
             selectedRequest?.Status === "Rejected") && (
             <Text>
-              <strong>Approved By:</strong>{" "}
+              <strong>
+                {selectedRequest?.Status === "Approved"
+                  ? "Approved By"
+                  : selectedRequest?.Status === "Hold"
+                    ? "Hold By"
+                    : "Rejected By"}
+                :
+              </strong>{" "}
               {getDetailText(selectedRequest?.ApprovedBy?.Title)}
             </Text>
           )}
@@ -868,7 +876,15 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
 
       <Dialog
         hidden={!isSuccessDialogOpen}
-        onDismiss={() => setIsSuccessDialogOpen(false)}
+        onDismiss={() => {
+          setIsSuccessDialogOpen(false);
+          setSubmittedTitle(null);
+          void getReviewData().catch((error) => {
+            setMessageType(MessageBarType.error);
+            setMessage("Error refreshing data.");
+            console.error(error);
+          });
+        }}
         dialogContentProps={{
           type: DialogType.normal,
           title: "Request Submitted",
@@ -884,6 +900,11 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
             onClick={() => {
               setIsSuccessDialogOpen(false);
               setSubmittedTitle(null);
+              void getReviewData().catch((error) => {
+                setMessageType(MessageBarType.error);
+                setMessage("Error refreshing data.");
+                console.error(error);
+              });
             }}
           />
         </DialogFooter>

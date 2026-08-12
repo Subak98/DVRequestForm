@@ -37,7 +37,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
         .getById(listid)
         .items.getById(itemId)
         .select(
-          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,Author/Title,Author/EMail,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
+          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,ApprovedBy/Title,ApprovedBy/EMail,Author/Title,Author/EMail,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id",
         )
         .expand("Author,PrimaryOwner,Approvers,SecondaryOwner,ApprovedBy")();
 
@@ -51,7 +51,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
 
       getitems = await query
         .select(
-          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,Author/Title,Author/EMail,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id,ApprovedBy/Title",
+          "Title,SiteDescription,SiteJustification,Comments,SiteSlugUrl,SiteType,Status,Department,Created,ApprovedBy/Title,ApprovedBy/EMail,Author/Title,Author/EMail,PrimaryOwner/Title,Approvers/Title,SecondaryOwner/Title,PrimaryOwner/EMail,Approvers/EMail,SecondaryOwner/EMail,Id",
         )
         .expand("Author,PrimaryOwner,Approvers,SecondaryOwner,ApprovedBy")
         .orderBy("Modified", false)();
@@ -130,7 +130,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
 
       _items.push(lst);
     }
-    // console.log(_items);
+    console.log(_items);
 
     return _items;
   }
@@ -346,18 +346,18 @@ export default class SharepointServiceProvider implements IServiceProvider {
               FieldName: "Comments",
               FieldValue: comments || "",
             },
-            ...(useremail && status == "Approved"
-              ? [
-                  {
-                    FieldName: "ApprovedBy",
-                    FieldValue: JSON.stringify([
-                      {
-                        Key: `i:0#.f|membership|${useremail}`,
-                      },
-                    ]),
-                  },
-                ]
-              : []),
+            // ...(useremail && status == "Approved"
+            //   ? [
+            {
+              FieldName: "ApprovedBy",
+              FieldValue: JSON.stringify([
+                {
+                  Key: `i:0#.f|membership|${useremail}`,
+                },
+              ]),
+            },
+            // ]
+            // : []),
           ],
           true,
         );
@@ -395,7 +395,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
       .items.filter(filter)();
     return getitems;
   }
-  public sendEmail(
+  public async sendEmail(
     context: any,
     siteName: string,
     siteDescription: string,
@@ -407,7 +407,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
     approverOptions: any[],
     Id: any,
     PAURL: string,
-  ): Promise<HttpClientResponse> {
+  ): Promise<void> {
     const postURL = PAURL;
     // "https://defaultb14a476cad7448f8986f8942642cad.2e.environment.api.powerplatform.com:443/powerautomate/automations/direct/workflows/f645d31e5aa448999fc7a1d80294e8a1/triggers/manual/paths/invoke?api-version=1&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=iit1NX7jswZ2xWpxRJkqrmebmxlr9ObSheoq5JndZrY";
     const body: string = JSON.stringify({
@@ -426,12 +426,17 @@ export default class SharepointServiceProvider implements IServiceProvider {
       headers: requestHeaders,
     };
     console.log("Sending Email");
-    return context.httpClient
-      .post(postURL, HttpClient.configurations.v1, httpClientOptions)
-      .then((response: HttpClientResponse): Promise<HttpClientResponse> => {
-        console.log("Email sent.");
-        return response.json();
-      });
+    const response = await context.httpClient.post(
+      postURL,
+      HttpClient.configurations.v1,
+      httpClientOptions,
+    );
+    // return context.httpClient
+    //   .post(postURL, HttpClient.configurations.v1, httpClientOptions)
+    //   .then((response: HttpClientResponse): Promise<HttpClientResponse> => {
+    //     console.log("Email sent.");
+    //     return response.json();
+    //   });
   }
   public async ApprovalResponse(
     context: any,
