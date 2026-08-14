@@ -158,16 +158,24 @@ const RequestForm: React.FC<IRequestFormProps> = ({
   }, [currentWebUrl, department, spHttpClient]);
 
   const checkSiteExists = async (name: string): Promise<boolean> => {
-    const escaped = name.trim();
-    // const queryText = `Title:${escaped} AND contentclass:STS_Web`;
+    const escaped = name.trim().replace(/'/g, "''");
+
     const queryText = `Title:${escaped}`;
-    const requestUrl = `${currentWebUrl}/_api/search/query?querytext='${encodeURIComponent(queryText)}'&trimduplicates=false&rowlimit=1&selectproperties='Title,Path'`;
+
+    const requestUrl =
+      `${currentWebUrl}/_api/search/query` +
+      `?querytext='${encodeURIComponent(queryText)}'` +
+      `&trimduplicates=false` +
+      `&rowlimit=10` +
+      `&selectproperties='Title,Path,SiteName,WebUrl'`;
 
     const response = await spHttpClient.get(
       requestUrl,
       SPHttpClient.configurations.v1,
       {
-        headers: { Accept: "application/json;odata=nometadata" },
+        headers: {
+          Accept: "application/json;odata=nometadata",
+        },
       },
     );
 
@@ -176,8 +184,19 @@ const RequestForm: React.FC<IRequestFormProps> = ({
     }
 
     const json = await response.json();
+
     const rows = json?.PrimaryQueryResult?.RelevantResults?.Table?.Rows || [];
-    return rows.length > 0;
+
+    // Check exact Title match
+    const siteExists = rows.some((row: any) => {
+      const cells = row.Cells || [];
+
+      const title = cells.find((cell: any) => cell.Key === "Title")?.Value;
+
+      return title?.trim().toLowerCase() === escaped.trim().toLowerCase();
+    });
+
+    return siteExists;
   };
   const resetFields = async () => {
     setSiteName("");
