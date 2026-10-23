@@ -157,25 +157,25 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
       setMessage("Error processing approval.");
       console.error(error);
     }
-    if (status === "Hold" || status === "Rejected") {
-      await provider.ApprovalResponse(
-        context,
-        requestData.Title,
-        requestData.Description,
-        requestData.PrimaryOwner,
-        requestData.SecondaryOwner,
-        requestData.Department,
-        requestData.ApproverTitle,
-        comments,
-        requestData.RequestApprover,
-        requestData.Id,
-        requestData.Requestor,
-        requestData.RequestorEmail,
-        status,
-        ApprovalResponseURL,
-        username,
-      );
-    }
+    // if (status === "Hold" || status === "Rejected") {
+    //   await provider.ApprovalResponse(
+    //     context,
+    //     requestData.Title,
+    //     requestData.Description,
+    //     requestData.PrimaryOwner,
+    //     requestData.SecondaryOwner,
+    //     requestData.Department,
+    //     requestData.ApproverTitle,
+    //     comments,
+    //     requestData.RequestApprover,
+    //     requestData.Id,
+    //     requestData.Requestor,
+    //     requestData.RequestorEmail,
+    //     status,
+    //     ApprovalResponseURL,
+    //     username,
+    //   );
+    // }
     const tenantName = new URL(
       context.pageContext.web.absoluteUrl,
     ).hostname.split(".")[0];

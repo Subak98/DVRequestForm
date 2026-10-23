@@ -261,19 +261,19 @@ const RequestForm: React.FC<IRequestFormProps> = ({
               setSubmitSuccessDialogVisible(false);
               onCancel?.();
             }, 3000);
-            await props.provider.sendEmail(
-              props.context,
-              siteName,
-              siteDescription,
-              primaryOwners.map((user) => user.text).join(", "),
-              secondaryOwners.map((user) => user.text).join(", "),
-              department,
-              approver,
-              reason,
-              approverOptions,
-              response.Id,
-              props.PAURL,
-            );
+            // await props.provider.sendEmail(
+            //   props.context,
+            //   siteName,
+            //   siteDescription,
+            //   primaryOwners.map((user) => user.text).join(", "),
+            //   secondaryOwners.map((user) => user.text).join(", "),
+            //   department,
+            //   approver,
+            //   reason,
+            //   approverOptions,
+            //   response.Id,
+            //   props.PAURL,
+            // );
           })
           .catch((error) => {
             console.error("Error saving draft:", error);

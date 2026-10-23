@@ -179,12 +179,12 @@ export default class DvRequestFormWebPart extends BaseClientSideWebPart<IDvReque
                   href: `${this.context.pageContext.web.absoluteUrl}/_layouts/15/listform.aspx?PageType=6&ListId=${this.properties.formDescription}&ID=${this.formdesID}`,
                   text: "Edit Form Description",
                 }),
-                PropertyPaneTextField("PAURL", {
-                  label: "Enter Trigger URL for Power Automate",
-                }),
-                PropertyPaneTextField("ApprovalResponseURL", {
-                  label: "Enter Approval Response URL for Power Automate",
-                }),
+                // PropertyPaneTextField("PAURL", {
+                //   label: "Enter Trigger URL for Power Automate",
+                // }),
+                // PropertyPaneTextField("ApprovalResponseURL", {
+                //   label: "Enter Approval Response URL for Power Automate",
+                // }),
               ],
             },
           ],
