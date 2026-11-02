@@ -57,7 +57,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
         .orderBy("Modified", false)();
     }
     _items = [];
-    console.log(getitems);
+    // console.log(getitems);
 
     for (let i = 0; i < getitems.length; i++) {
       let item = getitems[i];
@@ -130,7 +130,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
 
       _items.push(lst);
     }
-    console.log(_items);
+    // console.log(_items);
 
     return _items;
   }
@@ -209,7 +209,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
     }
   }
   public async EditRequest(listid: string, request: any): Promise<any[]> {
-    console.log(request, "request");
+    // console.log(request, "request");
     try {
       await this.sp.web.lists
         .getById(listid)
@@ -332,6 +332,9 @@ export default class SharepointServiceProvider implements IServiceProvider {
     comments?: string,
     useremail?: string,
   ): Promise<any[]> {
+    // console.log(status, "status");
+    // console.log(useremail, "useremail");
+
     try {
       await this.sp.web.lists
         .getById(listid)
@@ -425,7 +428,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
       body: body,
       headers: requestHeaders,
     };
-    console.log("Sending Email");
+    // console.log("Sending Email");
     const response = await context.httpClient.post(
       postURL,
       HttpClient.configurations.v1,
@@ -478,7 +481,7 @@ export default class SharepointServiceProvider implements IServiceProvider {
       body: body,
       headers: requestHeaders,
     };
-    console.log("Sending Email");
+    // console.log("Sending Email");
 
     const response = await context.httpClient.post(
       postURL,
@@ -486,6 +489,6 @@ export default class SharepointServiceProvider implements IServiceProvider {
       httpClientOptions,
     );
 
-    console.log("Email sent.", response);
+    // console.log("Email sent.", response);
   }
 }

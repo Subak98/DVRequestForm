@@ -130,15 +130,15 @@ const RequestForm: React.FC<IRequestFormProps> = ({
         }
 
         const json = await response.json();
-        console.log(json);
+        // console.log(json);
 
         const items = json.value || [];
-        console.log(items);
+        // console.log(items);
         const approversarr = items.flatMap(
           (item: any) =>
             item.Approvers?.map((approver: any) => approver.EMail) || [],
         );
-        console.log(approversarr);
+        // console.log(approversarr);
 
         setApproverOptions(approversarr);
 

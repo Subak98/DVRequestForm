@@ -118,7 +118,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
     spHttpClient: props.props.context.spHttpClient,
   };
   const handleEdit = (item: IRequestRow) => {
-    console.log(item);
+    // console.log(item);
     setDepartment(item.Department);
     setPrimaryOwners(item.PrimaryOwnerTitle);
     setPrimaryEmails(item.PrimaryOwnerEmail);
@@ -136,12 +136,12 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
         `Author/EMail eq '${props.props.userEmail}' or PrimaryOwner/EMail eq '${props.props.userEmail}'`,
       )
       .then((response: any) => {
-        console.log("response", response);
+        // console.log("response", response);
         setRequests(response);
       });
   };
   const handleSendRequest = async (item: IRequestRow) => {
-    console.log(item);
+    // console.log(item);
 
     // validate required fields before submitting
     if (item.Status === "Submitted") {
@@ -171,7 +171,13 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
       return;
     }
     await props.props.provider
-      .ChangeStatus(props.props.RequestFormId, item.Id)
+      .ChangeStatus(
+        props.props.RequestFormId,
+        item.Id,
+        "Submitted",
+        "",
+        props.props.userEmail,
+      )
       .then(async (response: any) => {
         setMessageType(MessageBarType.success);
         getReviewData().catch((error) => {
@@ -182,19 +188,19 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
         setIsEditDialogOpen(false);
         setEditingItem(null);
         setEditFormData(null);
-        await props.props.provider.sendEmail(
-          props.props.context,
-          item.Title,
-          "",
-          item.PrimaryOwnerTitle,
-          item.SecondaryOwnerTitle,
-          department,
-          [...approverOptions],
-          item.SiteJustification,
-          item.ApproverTitle,
-          item.Id,
-          props.props.PAURL,
-        );
+        // await props.props.provider.sendEmail(
+        //   props.props.context,
+        //   item.Title,
+        //   "",
+        //   item.PrimaryOwnerTitle,
+        //   item.SecondaryOwnerTitle,
+        //   department,
+        //   [...approverOptions],
+        //   item.SiteJustification,
+        //   item.ApproverTitle,
+        //   item.Id,
+        //   props.props.PAURL,
+        // );
       });
     // mark as submitted locally and show success popup
     // setRequests((current) =>
@@ -431,13 +437,13 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
       setCurrentPage(pageCount);
     }
   }, [currentPage, pageCount]);
-  console.log(secondaryEmails);
-  console.log(secondaryOwners);
+  // console.log(secondaryEmails);
+  // console.log(secondaryOwners);
 
   // console.log(editFormData);
 
   const handleSaveEdit = async () => {
-    console.log(department);
+    // console.log(department);
 
     if (!editFormData) return;
     return await props.props.provider
@@ -510,7 +516,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
           (item: any) =>
             item.Approvers?.map((approver: any) => approver.EMail) || [],
         );
-        console.log(approversarr, "approversarr");
+        // console.log(approversarr, "approversarr");
 
         setApproverOptions(approversarr);
 
@@ -534,7 +540,7 @@ const ReviewRequest: React.FC<IReviewRequestProps> = (props) => {
       setEditFormData({ ...editFormData, [field]: value });
     }
   };
-  console.log(selectedRequest);
+  // console.log(selectedRequest);
 
   return (
     <div className={styles.reviewRequest}>

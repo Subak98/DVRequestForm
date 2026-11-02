@@ -70,7 +70,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
       await provider
         .getReviewData(listid, Number(requestId))
         .then(async (data: any) => {
-          console.log(data);
+          // console.log(data);
 
           setRequestData(data[0]);
           await provider
@@ -97,7 +97,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
       console.error(error);
     });
   }, [requestId]);
-  console.log(requestData);
+  // console.log(requestData);
   // console.log(context);
   // console.log(departmentdata);
 
@@ -147,7 +147,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
           setMessage(
             `Request has been ${status.toLowerCase()}ed successfully.`,
           );
-          console.log(requestData);
+          // console.log(requestData);
 
           // console.log(tenantName);
           // Close dialog and navigate after successful submission
@@ -200,7 +200,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
       ],
     };
     const encoded = encodeURIComponent(JSON.stringify(urlJson));
-    console.log(encoded);
+    // console.log(encoded);
     if (status === "Hold" || status === "Rejected") {
       window.location.href = `${currentWebUrl}/SitePages/DV-Request-Form.aspx?tab=review`;
     } else {
@@ -229,7 +229,7 @@ const ApproveForm: React.FC<IApproveFormProps> = ({
       </Dialog>
     );
   }
-  console.log(requestData);
+  // console.log(requestData);
 
   if (!requestData) {
     return null;

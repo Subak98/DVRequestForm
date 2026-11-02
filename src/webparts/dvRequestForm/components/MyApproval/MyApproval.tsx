@@ -51,7 +51,7 @@ const MyApproval: React.FC<IMyApprovalProps> = ({ props }) => {
   );
   const [isDetailsDialogOpen, setIsDetailsDialogOpen] = useState(false);
   const pageSize = 10;
-  console.log(props);
+  // console.log(props);
 
   const currentUserName = props.userDisplayName || "";
   const currentUserEmail = props.userEmail || "";
